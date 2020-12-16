@@ -232,7 +232,7 @@ void reg_mascota()
 	
 	printf("\nIngrese el DNI de Dueño: ");
 	_flushall();
-	scanf("%d", &DNI_Duenio);
+	scanf("%d", &reg.DNI_Duenio);
 
 	
 	printf("\nIngrese la Localidad: ");
@@ -263,9 +263,9 @@ void reg_mascota()
     
     
     
-    FILE*arch, *arch1;
+    FILE*arch1;
 	arch1=fopen("Mascota.dat", "ab");
-	fwrite(&registrodemascota, sizeof(registrodemascota), 1, arch1);
+	fwrite(&reg, sizeof(reg), 1, arch1);
 	fclose(arch1);
     
     	

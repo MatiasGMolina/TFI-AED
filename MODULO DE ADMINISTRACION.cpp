@@ -3,6 +3,7 @@
 #include <string.h>
 #include <wchar.h>
 #include <locale.h>
+#include<conio.h>
 
 void menu();
 void reg_vet();
@@ -12,6 +13,7 @@ bool buscar_vet(char nombre[60],int matricula);
 void validar_contrasenia(char cadena[32]);
 bool letras_consecutivas(char contrasenia[32]);
 bool numeros_consecutivos(char contrasenia[32]);
+void atenciones_vet();
 
 struct usuarios
 {
@@ -25,6 +27,29 @@ struct veterinario
 	char telefono[10];
 	char contrasenia[32];
 };
+struct Fecha
+{
+    int dia;
+    int mes;
+    int year; 
+};
+struct Turnos
+{
+	int Matricula_de_Veterinario;
+	Fecha fecha_cargada;
+	int DNI_Duenio;
+	char Detalle_de_Atencion[380];
+};
+struct Mascota
+{
+	char apell_nomb[60];
+	char Domicilio[60];
+	int DNI_Duenio;
+	char Locaidad[60];
+    Fecha fecha_nacimiento;
+	float Peso;	
+	char Telefono[25];	
+};
 main()
 {
 	setlocale(LC_ALL, ""); // caracteres en español
@@ -34,8 +59,6 @@ main()
 		menu();
 		printf("\t\t         Seleccione una Opción: ");
 		scanf("%d", &opcion);
-		
-		
 		
 			switch(opcion)
 			{
@@ -51,8 +74,9 @@ main()
 					system("\n\npause");
 					break;
 				case 3: 
-					
-					//atenciones_vet();
+				
+					atenciones_vet();
+					printf("\n\n");
 					system("\n\npause");
 					break;
 				case 4:
@@ -281,22 +305,104 @@ void reg_asistente()
 //*****************************************************************************************************//
 
 
-//void atenciones_vet()
-//{
-//	int mes;
-//	FILE*archvet,*archturnos,*archvet;
-//	
-//	
-//	printf("\nIngrese el número de mes a listar: ");
-//	scanf("%d",&mes);
-//	
-//	
-//	
-//	
-//	
-//	
-//	
-//}
+void atenciones_vet()
+{
+	int mes;
+	FILE*archvet,*archturnos,*archmas;
+	int c,band=0,matricula,band1=1;
+	veterinario regv;
+	Turnos regt;
+	Mascota regmas;
+	
+	archvet=fopen("veterinario.dat", "rb");
+	archturnos=fopen("Turnos.dat", "rb");
+	archmas=fopen("Mascota.dat", "rb");
+	if(archvet==NULL)
+	{
+		printf("\nERROR. NO SE REGISTRO NINGUN VETERINARIO.");
+	}
+	else 
+	{
+		if(archturnos==NULL)
+		{
+			printf("\nERROR. NO SE REGISTRO NINGUN TURNO.");
+		}
+		else
+		{
+			if(archmas==NULL)
+			{
+				printf("\nERROR. NO SE REGISTRO NINGUNA MASCOTA.");
+			}
+			else
+			{
+				printf("\n\nATENCIONES POR VETERINARIOS:\n");
+				
+				while(band==0)
+				{
+					printf("\nIngrese la matricula del veterinario: ");
+					scanf("%d",&matricula);
+					rewind(archvet);
+					fread(&regv, sizeof(regv), 1, archvet);
+					while(!feof(archvet))
+					{	
+						if(regv.matricula==matricula)
+						{
+							printf("\n\t\t\t\t\t**                  LISTADO DE ATENCIOINES                          **\n");
+							printf("\t\t                                                                      \n");
+							printf("\t\tMATRICULA                  VETERINARIO                 FECHA DE TURNO                      NOMBRE DE LA MASCOTA \n");
+							printf("\t\t*************************************************************************************************************************\n\n");
+							//printf("\t\t                                                                      \n");
+							
+							band=1;
+							rewind(archturnos);
+							fread(&regt, sizeof(regt), 1, archturnos);
+							while(!feof(archturnos))
+							{
+								if(matricula==regt.Matricula_de_Veterinario)
+								{
+									printf("\n\t\t %d    ",matricula);
+									printf("                 %s",regv.apell_nom);
+									printf("\t\t                %d/%d/%d",regt.fecha_cargada.dia,regt.fecha_cargada.mes,regt.fecha_cargada.year);
+									band1=1;
+									rewind(archmas);
+									fread(&regmas, sizeof(regmas), 1, archmas);
+									while(!feof(archmas))
+									{
+										
+										if(regt.DNI_Duenio==regmas.DNI_Duenio)
+										{
+										printf("\t\t                        %s",regmas.apell_nomb);
+										}
+										fread(&regmas, sizeof(regmas), 1, archmas);
+									}	
+								}
+								
+								
+									
+								
+								
+								fread(&regt, sizeof(regt), 1, archturnos);
+							}
+								
+						}
+						
+						fread(&regv, sizeof(regv), 1, archvet);
+					}
+					if(band==0)
+						{
+							printf("\nERROR. No existe ningún veterinario con esa matricula.\n");
+						}
+				}	
+			}	
+		}
+	}
+	fclose(archvet);
+	fclose(archturnos);
+	fclose(archmas);
+	printf("\n");
+	
+}
+
 
 //*****************************************************************************************************//
 //*****************************************************************************************************//
@@ -372,7 +478,7 @@ void validar_contrasenia(char cadena[32])
 				caracter_numerico++;
 			}
 			
-			if((cadena[i] == '+') or (cadena[i] == ',') or (cadena[i] == ';') or (cadena[i] == ':') or (cadena[i] == '""') 
+			if((cadena[i] == '+') or (cadena[i] == ',') or (cadena[i] == ';') or (cadena[i] == ':') or (cadena[i] == '""')
 		 	or (cadena[i] == '[]') or (cadena[i] == '{}') or (cadena[i] == '()') or (cadena[i] == '?') 
 			or (cadena[i] == '¿') or (cadena[i] == '-') or (cadena[i] == '_') or (cadena[i] == '!') or (cadena[i] == '¡') 
 			or (cadena[i] == ' '))
